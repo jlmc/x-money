@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX category_name_uindex ON public.category (name);

@@ -3,10 +3,12 @@ package com.xcosta.xmoney.api.category.boundary;
 import com.xcosta.xmoney.api.category.control.CategoryRepository;
 import com.xcosta.xmoney.api.category.entity.Category;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.servlet.http.HttpServletResponse;
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -25,9 +27,25 @@ public class CategoryResource {
         return categoryRepository.findAll();
     }
 
+    @PostMapping
+    public ResponseEntity<Category> save(@RequestBody Category category, HttpServletResponse response) {
+        Category categorySaved = this.categoryRepository.save(category);
+
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{code}")
+                .buildAndExpand(categorySaved.getCode()).toUri();
+        response.setHeader("Location", uri.toASCIIString());
+
+        return ResponseEntity.created(uri).body(categorySaved);
+    }
+
+    @GetMapping("/{code}")
+    public Category getByCode(@PathVariable Long code) {
+        return this.categoryRepository.findOne(code);
+    }
+
     @GetMapping("/echo")
-    public String echo() {
-        return "categories - " + System.currentTimeMillis();
+    public ResponseEntity<?> echo() {
+        return ResponseEntity.ok("categories - " + System.currentTimeMillis());
     }
 
 
