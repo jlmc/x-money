@@ -10,6 +10,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/categories")
@@ -39,8 +40,10 @@ public class CategoryResource {
     }
 
     @GetMapping("/{code}")
-    public Category getByCode(@PathVariable Long code) {
-        return this.categoryRepository.findOne(code);
+    public ResponseEntity<Category> getByCode(@PathVariable Long code) {
+        return Optional.ofNullable(this.categoryRepository.findOne(code))
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/echo")
