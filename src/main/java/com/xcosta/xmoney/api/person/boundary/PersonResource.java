@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/persons")
@@ -40,13 +41,11 @@ public class PersonResource {
 
     @PostMapping
     public ResponseEntity<?> register(@RequestBody @Valid Person person, HttpServletResponse response) {
-
-        Person personByCode = this.repository.getPersonByCode(person.getCode());
-
+        //Person personByCode = this.repository.getPersonByCode(person.getCode());
         // 409
-        if (personByCode != null) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("code already in use");
-        }
+        //if (personByCode != null) {
+        //    return ResponseEntity.status(HttpStatus.CONFLICT).body("code already in use");
+        //}
 
         Person savedPerson = this.repository.save(person);
 
@@ -58,5 +57,18 @@ public class PersonResource {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savedPerson);
 
+    }
+
+    @GetMapping("/{code}")
+    public ResponseEntity<Person> buscarPeloCodigo(@PathVariable String code) {
+        return Optional.ofNullable(repository.getPersonByCode(code))
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{code}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void remove(@PathVariable  String code) {
+        this.repository.deleteByCode(code);
     }
 }
