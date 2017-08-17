@@ -1,5 +1,6 @@
 package com.xcosta.xmoney.api;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -60,7 +61,11 @@ public class XMoneyExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleDataIntegrityViolationException(Exception ex,
                                                                          WebRequest request) {
         String userMessage = messageSource.getMessage("resource.conflict", null, LocaleContextHolder.getLocale());
-        String devMessage = this.devMessageMapper.apply(ex);
+        //String devMessage = this.devMessageMapper.apply(ex);
+        String devMessage = ExceptionUtils.getRootCauseMessage(ex);
+
+
+
         return handleExceptionInternal(ex, Collections.singletonList(new Error(userMessage, devMessage)),
                 new HttpHeaders(), HttpStatus.CONFLICT, request);
 
@@ -91,7 +96,7 @@ public class XMoneyExceptionHandler extends ResponseEntityExceptionHandler {
         private final String userMessage;
         private final String devMessage;
 
-        public Error(String userMessage, String devMessage) {
+        private Error(String userMessage, String devMessage) {
             this.userMessage = userMessage;
             this.devMessage = devMessage;
         }
@@ -104,6 +109,9 @@ public class XMoneyExceptionHandler extends ResponseEntityExceptionHandler {
             return devMessage;
         }
 
+        public static Error of(String userMessage, String devMessage) {
+            return new Error(userMessage, devMessage);
+        }
     }
 
 }

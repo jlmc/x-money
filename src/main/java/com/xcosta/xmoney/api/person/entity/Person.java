@@ -54,7 +54,7 @@ public class Person implements Distinguishable <String> {
         return name;
     }
 
-    public Boolean getActive() {
+    public Boolean isActive() {
         return active;
     }
 

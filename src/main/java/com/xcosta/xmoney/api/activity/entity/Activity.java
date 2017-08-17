@@ -1,10 +1,13 @@
 package com.xcosta.xmoney.api.activity.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.xcosta.xmoney.api.Distinguishable;
 import com.xcosta.xmoney.api.category.entity.Category;
 import com.xcosta.xmoney.api.person.entity.Person;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlTransient;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -21,18 +24,26 @@ public class Activity implements Distinguishable <Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long code;
+    @NotNull
     private String description;
+    @NotNull
     private String observation;
+    @NotNull
     private LocalDate payday;
+    @NotNull
     private LocalDate maturity;
+    @NotNull
     private BigDecimal value;
+    @NotNull
     @Enumerated(EnumType.STRING)
     private Type type;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "category_code")
     private Category category;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "person_id")
     private Person person;
@@ -75,5 +86,12 @@ public class Activity implements Distinguishable <Long> {
 
     public void setPerson(Person person) {
         this.person = person;
+    }
+
+    @JsonIgnore
+    @XmlTransient
+    @Transient
+    public String getPersonCode() {
+        return this.person.getCode();
     }
 }

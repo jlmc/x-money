@@ -16,8 +16,8 @@ import java.util.List;
 @Service
 public class ActivityManager {
 
-    private ActivityRepository repository;
-    private PersonRepository personRepository;
+    private final ActivityRepository repository;
+    private final PersonRepository personRepository;
 
 
     @Autowired
@@ -42,7 +42,11 @@ public class ActivityManager {
 
     public Activity create(Activity activity) {
 
-        Person person = this.personRepository.getPersonByCode(activity.getPerson().getCode());
+        Person person = this.personRepository.getPersonByCode(activity.getPersonCode());
+
+        if (person == null || !person.isActive()) {
+            throw new NonExistentOrInactivePersonException();
+        }
 
         activity.setPerson(person);
         return this.repository.save(activity);
