@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class XmoneyApiApplication {
+public class XMoneyApiApplication {
 
 
 	public static void main(String[] args) {
-		SpringApplication.run(XmoneyApiApplication.class, args);
+		SpringApplication.run(XMoneyApiApplication.class, args);
 	}
 }
