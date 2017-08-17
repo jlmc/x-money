@@ -33,6 +33,14 @@ public class Person implements Distinguishable <String> {
         return address;
     }
 
+    void setActive(Boolean active) {
+        this.active = active;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+
     public Long getId() {
         return id;
     }

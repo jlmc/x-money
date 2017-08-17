@@ -21,11 +21,13 @@ public class PersonResource {
 
     private final PersonRepository repository;
     private final ApplicationEventPublisher publisher;
+    private final PersonManager manager;
 
     @Autowired
-    public PersonResource(PersonRepository repository, ApplicationEventPublisher publisher) {
+    public PersonResource(PersonManager manager, PersonRepository repository, ApplicationEventPublisher publisher) {
         this.repository = repository;
         this.publisher = publisher;
+        this.manager = manager;
     }
 
     @GetMapping("/echo")
@@ -60,7 +62,7 @@ public class PersonResource {
     }
 
     @GetMapping("/{code}")
-    public ResponseEntity<Person> buscarPeloCodigo(@PathVariable String code) {
+    public ResponseEntity<Person> findByCode(@PathVariable String code) {
         return Optional.ofNullable(repository.getPersonByCode(code))
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -70,5 +72,12 @@ public class PersonResource {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void remove(@PathVariable  String code) {
         this.repository.deleteByCode(code);
+    }
+
+    @PutMapping("/{code}")
+    public ResponseEntity<Person> update(@Valid @RequestBody Person person, @PathVariable String code) {
+        Person updated = this.manager.update(code, person);
+        return ResponseEntity.ok(updated);
+
     }
 }
