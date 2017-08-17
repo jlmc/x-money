@@ -19,13 +19,11 @@ import java.util.Optional;
 @RequestMapping("/persons")
 public class PersonResource {
 
-    private final PersonRepository repository;
     private final ApplicationEventPublisher publisher;
     private final PersonManager manager;
 
     @Autowired
-    public PersonResource(PersonManager manager, PersonRepository repository, ApplicationEventPublisher publisher) {
-        this.repository = repository;
+    public PersonResource(PersonManager manager, ApplicationEventPublisher publisher) {
         this.publisher = publisher;
         this.manager = manager;
     }
@@ -38,24 +36,14 @@ public class PersonResource {
 
     @GetMapping
     public List<Person> list() {
-        return repository.findAll(new Sort(Sort.Direction.ASC, "name"));
+        return this.manager.search();
     }
 
     @PostMapping
     public ResponseEntity<?> register(@RequestBody @Valid Person person, HttpServletResponse response) {
-        //Person personByCode = this.repository.getPersonByCode(person.getCode());
-        // 409
-        //if (personByCode != null) {
-        //    return ResponseEntity.status(HttpStatus.CONFLICT).body("code already in use");
-        //}
-
-        Person savedPerson = this.repository.save(person);
+        Person savedPerson = this.manager.create(person);
 
         this.publisher.publishEvent(new ResourceCreatedEvent(this, response, savedPerson));
-
-//        URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{code}")
-//                .buildAndExpand(savedPerson.getCode()).toUri();
-//        response.setHeader("Location", uri.toASCIIString());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savedPerson);
 
@@ -63,15 +51,13 @@ public class PersonResource {
 
     @GetMapping("/{code}")
     public ResponseEntity<Person> findByCode(@PathVariable String code) {
-        return Optional.ofNullable(repository.getPersonByCode(code))
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(this.manager.findByCode(code)) ;
     }
 
     @DeleteMapping("/{code}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void remove(@PathVariable  String code) {
-        this.repository.deleteByCode(code);
+        this.manager.delete(code);
     }
 
     @PutMapping("/{code}")
@@ -79,5 +65,11 @@ public class PersonResource {
         Person updated = this.manager.update(code, person);
         return ResponseEntity.ok(updated);
 
+    }
+
+    @PutMapping("/{code}/status")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void changeStatus(@PathVariable String code, @RequestBody Boolean status) {
+        this.manager.changeStatus(code, status);
     }
 }

@@ -33,7 +33,7 @@ public class Person implements Distinguishable <String> {
         return address;
     }
 
-    void setActive(Boolean active) {
+    public void setActive(Boolean active) {
         this.active = active;
     }
 
