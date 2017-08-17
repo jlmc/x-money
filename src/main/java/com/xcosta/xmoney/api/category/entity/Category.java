@@ -1,5 +1,7 @@
 package com.xcosta.xmoney.api.category.entity;
 
+import com.xcosta.xmoney.api.Distinguishable;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -7,7 +9,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "category")
-public class Category {
+public class Category implements Distinguishable<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,6 +19,7 @@ public class Category {
     @Size(min = 3, max = 20)
     private String name;
 
+    @Override
     public Long getCode() {
         return code;
     }

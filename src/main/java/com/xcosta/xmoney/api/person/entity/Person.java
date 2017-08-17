@@ -1,23 +1,23 @@
 package com.xcosta.xmoney.api.person.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.xcosta.xmoney.api.Distinguishable;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlTransient;
 import java.util.Objects;
 
 @Entity
 @Table(name = "person")
-public class Person {
+public class Person implements Distinguishable <String> {
 
     @JsonIgnore
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NaturalId(mutable = false)
+    @NaturalId
     private String code;
 
     @NotNull
@@ -37,6 +37,7 @@ public class Person {
         return id;
     }
 
+    @Override
     public String getCode() {
         return code;
     }

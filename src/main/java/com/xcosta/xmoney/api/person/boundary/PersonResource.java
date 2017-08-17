@@ -1,18 +1,17 @@
 package com.xcosta.xmoney.api.person.boundary;
 
+import com.xcosta.xmoney.api.event.ResourceCreatedEvent;
 import com.xcosta.xmoney.api.person.control.PersonRepository;
 import com.xcosta.xmoney.api.person.entity.Person;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -20,10 +19,12 @@ import java.util.List;
 public class PersonResource {
 
     private final PersonRepository repository;
+    private final ApplicationEventPublisher publisher;
 
     @Autowired
-    public PersonResource(PersonRepository repository) {
+    public PersonResource(PersonRepository repository, ApplicationEventPublisher publisher) {
         this.repository = repository;
+        this.publisher = publisher;
     }
 
     @GetMapping("/echo")
@@ -49,11 +50,13 @@ public class PersonResource {
 
         Person savedPerson = this.repository.save(person);
 
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{code}")
-                .buildAndExpand(savedPerson.getCode()).toUri();
-        response.setHeader("Location", uri.toASCIIString());
+        this.publisher.publishEvent(new ResourceCreatedEvent(this, response, savedPerson));
 
-        return ResponseEntity.created(uri).body(savedPerson);
+//        URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{code}")
+//                .buildAndExpand(savedPerson.getCode()).toUri();
+//        response.setHeader("Location", uri.toASCIIString());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedPerson);
 
     }
 }
