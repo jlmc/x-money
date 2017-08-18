@@ -2,6 +2,7 @@ package com.xcosta.xmoney.api.activity.boundary;
 
 import com.xcosta.xmoney.api.activity.control.ActivityRepository;
 import com.xcosta.xmoney.api.activity.entity.Activity;
+import com.xcosta.xmoney.api.activity.entity.ActivityFilter;
 import com.xcosta.xmoney.api.person.control.PersonRepository;
 import com.xcosta.xmoney.api.person.entity.Person;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +27,8 @@ public class ActivityManager {
         this.personRepository = personRepository;
     }
 
-    public List<Activity> search() {
-        return repository.findAll();
+    public List<Activity> search(ActivityFilter activityFilter) {
+        return repository.search(activityFilter);
     }
 
     public Activity findByCode(@PathVariable Long code) {

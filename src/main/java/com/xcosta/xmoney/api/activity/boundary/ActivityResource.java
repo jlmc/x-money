@@ -4,6 +4,7 @@ import static com.xcosta.xmoney.api.XMoneyExceptionHandler.*;
 
 import com.xcosta.xmoney.api.XMoneyExceptionHandler;
 import com.xcosta.xmoney.api.activity.entity.Activity;
+import com.xcosta.xmoney.api.activity.entity.ActivityFilter;
 import com.xcosta.xmoney.api.event.ResourceCreatedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -27,15 +28,17 @@ public class ActivityResource {
     private final MessageSource messageSource;
 
     @Autowired
-    public ActivityResource(ActivityManager manager, ApplicationEventPublisher publisher, MessageSource messageSource) {
+    public ActivityResource(ActivityManager manager,
+                            ApplicationEventPublisher publisher,
+                            MessageSource messageSource) {
         this.manager = manager;
         this.publisher = publisher;
         this.messageSource = messageSource;
     }
 
     @GetMapping
-    public List<Activity> search() {
-        return this.manager.search();
+    public List<Activity> search(ActivityFilter activityFilter) {
+        return this.manager.search(activityFilter);
     }
 
     @GetMapping("/{code}")
