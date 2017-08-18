@@ -1,11 +1,9 @@
 package com.xcosta.xmoney.api.person.boundary;
 
 import com.xcosta.xmoney.api.event.ResourceCreatedEvent;
-import com.xcosta.xmoney.api.person.control.PersonRepository;
 import com.xcosta.xmoney.api.person.entity.Person;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/persons")

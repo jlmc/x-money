@@ -7,12 +7,10 @@ import com.xcosta.xmoney.api.person.control.PersonRepository;
 import com.xcosta.xmoney.api.person.entity.Person;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-
-import java.util.List;
 
 @Service
 public class ActivityManager {
@@ -27,8 +25,8 @@ public class ActivityManager {
         this.personRepository = personRepository;
     }
 
-    public List<Activity> search(ActivityFilter activityFilter) {
-        return repository.search(activityFilter);
+    public Page<Activity> search(ActivityFilter activityFilter, Pageable pageable) {
+        return repository.search(activityFilter, pageable);
     }
 
     public Activity findByCode(@PathVariable Long code) {
@@ -51,5 +49,9 @@ public class ActivityManager {
 
         activity.setPerson(person);
         return this.repository.save(activity);
+    }
+
+    public void remove(Long code) {
+        this.repository.delete(code);
     }
 }

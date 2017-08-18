@@ -1,7 +1,5 @@
 package com.xcosta.xmoney.api.activity.boundary;
 
-import static com.xcosta.xmoney.api.XMoneyExceptionHandler.*;
-
 import com.xcosta.xmoney.api.XMoneyExceptionHandler;
 import com.xcosta.xmoney.api.activity.entity.Activity;
 import com.xcosta.xmoney.api.activity.entity.ActivityFilter;
@@ -10,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.Collections;
-import java.util.List;
 
 @RestController
 @RequestMapping("/activities")
@@ -37,8 +36,8 @@ public class ActivityResource {
     }
 
     @GetMapping
-    public List<Activity> search(ActivityFilter activityFilter) {
-        return this.manager.search(activityFilter);
+    public Page<Activity> search(ActivityFilter activityFilter, Pageable pageable) {
+        return this.manager.search(activityFilter, pageable);
     }
 
     @GetMapping("/{code}")
@@ -55,6 +54,12 @@ public class ActivityResource {
         //Activity lancamentoSalvo = lancamentoRepository.save(activity);
         publisher.publishEvent(new ResourceCreatedEvent(this, response, savedActivity));
         return ResponseEntity.status(HttpStatus.CREATED).body(savedActivity);
+    }
+
+    @DeleteMapping("/{code}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void remove (@PathVariable  Long code) {
+        this.manager.remove(code);
     }
 
     @ExceptionHandler({NonExistentOrInactivePersonException.class})

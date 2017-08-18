@@ -12,7 +12,6 @@ public class ActivityFilter {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate maturityTo;
 
-
     public String getDescription() {
         return description;
     }
@@ -36,4 +35,5 @@ public class ActivityFilter {
     public void setMaturityTo(LocalDate maturityTo) {
         this.maturityTo = maturityTo;
     }
+
 }

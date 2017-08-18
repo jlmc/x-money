@@ -2,9 +2,13 @@ package com.xcosta.xmoney.api.activity.control;
 
 import com.xcosta.xmoney.api.activity.entity.Activity;
 import com.xcosta.xmoney.api.activity.entity.ActivityFilter;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,7 +21,7 @@ public class ActivityRepositoryImpl implements ActivityRepositoryQuery {
     EntityManager manager;
 
     @Override
-    public List<Activity> search(ActivityFilter filter) {
+    public Page<Activity> search(ActivityFilter filter, Pageable pageable) {
         CriteriaBuilder builder = manager.getCriteriaBuilder();
 
         CriteriaQuery<Activity> criteria = builder.createQuery(Activity.class);
@@ -29,7 +33,15 @@ public class ActivityRepositoryImpl implements ActivityRepositoryQuery {
 
         criteria.distinct(true).where(predicates);
 
-        return manager.createQuery(criteria).getResultList();
+
+        TypedQuery<Activity> query = manager.createQuery(criteria)
+                .setFirstResult(pageable.getPageNumber() * pageable.getPageSize())
+                .setMaxResults(pageable.getPageSize());
+
+        // List<T> content, Pageable pageable, long total
+        long total = this.total(filter);
+        return new PageImpl<>(query.getResultList(), pageable, total);
+
     }
 
     private Predicate[] toPredicates(ActivityFilter filter, CriteriaBuilder builder, Root<Activity> root) {
@@ -56,5 +68,21 @@ public class ActivityRepositoryImpl implements ActivityRepositoryQuery {
         }
 
         return predicates.toArray(new Predicate[0]);
+    }
+
+    private long total(ActivityFilter filter) {
+        CriteriaBuilder builder = manager.getCriteriaBuilder();
+
+        CriteriaQuery<Long> criteria = builder.createQuery(Long.class);
+        Root<Activity> root = criteria.from(Activity.class);
+        root.join("person", JoinType.LEFT);
+        root.join("category", JoinType.LEFT);
+
+        criteria.select(builder.count(root.get("code"))).where(this.toPredicates(filter, builder, root));
+
+        TypedQuery<Long> query = manager.createQuery(criteria);
+
+        // List<T> content, Pageable pageable, long total
+        return query.getSingleResult();
     }
 }
