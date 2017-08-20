@@ -28,8 +28,11 @@ public class AuthorizationServerConfigurator extends AuthorizationServerConfigur
                 .withClient("angular") // clientes da applicação Angular- nome da aplicação
                 .secret("@ngul@r0") // secrete da aplicação
                 .scopes("read", "write") // permissoes da aplicação no resources
-                .authorizedGrantTypes("password") // fluxo password flow, recebemos e username e passoword d o client
-                .accessTokenValiditySeconds(1800); // validade do token
+                //.authorizedGrantTypes("password") // fluxo password flow, recebemos e username e passoword d o client
+                .authorizedGrantTypes("password", "refresh_token") // fluxo password flow, recebemos e username e passoword d o client
+                //.accessTokenValiditySeconds(1800); // validade do token
+                .accessTokenValiditySeconds(20) // validade do token
+                .refreshTokenValiditySeconds(3600 * 24);
     }
 
     @Override
@@ -37,6 +40,7 @@ public class AuthorizationServerConfigurator extends AuthorizationServerConfigur
         endpoints
                 .tokenStore(tokenStore())
                 .accessTokenConverter(accessTokenConverter())
+                .reuseRefreshTokens(false) // por default o refresh token tem 24 horas de validade. se passar mos para false cada vez que o cliente requer um novo acceass token atravez de refresh um novo refresh token será gerado
                 .authenticationManager(authenticationManager);
     }
 
