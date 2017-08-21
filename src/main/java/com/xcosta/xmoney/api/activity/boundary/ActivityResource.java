@@ -3,6 +3,7 @@ package com.xcosta.xmoney.api.activity.boundary;
 import com.xcosta.xmoney.api.XMoneyExceptionHandler;
 import com.xcosta.xmoney.api.activity.entity.Activity;
 import com.xcosta.xmoney.api.activity.entity.ActivityFilter;
+import com.xcosta.xmoney.api.activity.entity.ActivitySummary;
 import com.xcosta.xmoney.api.event.ResourceCreatedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -38,6 +39,11 @@ public class ActivityResource {
     @GetMapping
     public Page<Activity> search(ActivityFilter activityFilter, Pageable pageable) {
         return this.manager.search(activityFilter, pageable);
+    }
+
+    @GetMapping("/summary")
+    public Page<ActivitySummary> searchSummary(ActivityFilter activityFilter, Pageable pageable) {
+        return this.manager.searchSummary(activityFilter, pageable);
     }
 
     @GetMapping("/{code}")

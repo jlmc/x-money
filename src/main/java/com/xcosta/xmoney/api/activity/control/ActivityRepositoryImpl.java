@@ -2,6 +2,7 @@ package com.xcosta.xmoney.api.activity.control;
 
 import com.xcosta.xmoney.api.activity.entity.Activity;
 import com.xcosta.xmoney.api.activity.entity.ActivityFilter;
+import com.xcosta.xmoney.api.activity.entity.ActivitySummary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -42,6 +43,40 @@ public class ActivityRepositoryImpl implements ActivityRepositoryQuery {
         long total = this.total(filter);
         return new PageImpl<>(query.getResultList(), pageable, total);
 
+    }
+
+    @Override
+    public Page<ActivitySummary> searchSummary(ActivityFilter filter, Pageable pageable) {
+        CriteriaBuilder builder = manager.getCriteriaBuilder();
+
+        CriteriaQuery<ActivitySummary> criteria = builder.createQuery(ActivitySummary.class);
+        Root<Activity> root = criteria.from(Activity.class);
+        root.fetch("person", JoinType.LEFT);
+        root.fetch("category", JoinType.LEFT);
+
+        Predicate[] predicates = this.toPredicates(filter, builder, root);
+
+        Selection[] selections = {
+                root.get("code"),
+                root.get("description"),
+                root.get("payday"),
+                root.get("maturity"),
+                root.get("value"),
+                root.get("type"),
+                root.get("category").get("name"),
+                root.get("person").get("name")
+        };
+
+        criteria.select(builder.construct(ActivitySummary.class, selections)).where(predicates);
+
+
+        TypedQuery<ActivitySummary> query = manager.createQuery(criteria)
+                .setFirstResult(pageable.getPageNumber() * pageable.getPageSize())
+                .setMaxResults(pageable.getPageSize());
+
+        // List<T> content, Pageable pageable, long total
+        long total = this.total(filter);
+        return new PageImpl<>(query.getResultList(), pageable, total);
     }
 
     private Predicate[] toPredicates(ActivityFilter filter, CriteriaBuilder builder, Root<Activity> root) {
