@@ -1,5 +1,7 @@
 package com.xcosta.xmoney.api.security.boundary;
 
+import com.xcosta.xmoney.api.configurations.XMoneyProperty;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,7 +13,14 @@ import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/logout")
-public class LogoutResourse {
+public class LogoutResource {
+
+    private final XMoneyProperty xMoneyProperty;
+
+    @Autowired
+    public LogoutResource(XMoneyProperty xMoneyProperty) {
+        this.xMoneyProperty = xMoneyProperty;
+    }
 
     @DeleteMapping
     public void logout(HttpServletRequest request, HttpServletResponse response) {
@@ -19,7 +28,7 @@ public class LogoutResourse {
 
         Cookie cookie = new Cookie("refreshToken", null);
         cookie.setHttpOnly(true);
-        cookie.setSecure(false); // TODO: Em producao sera true
+        cookie.setSecure(this.xMoneyProperty.getSecurity().isEnableHttps());
         cookie.setPath(request.getContextPath() + "/oauth/token");
         cookie.setMaxAge(0);
 

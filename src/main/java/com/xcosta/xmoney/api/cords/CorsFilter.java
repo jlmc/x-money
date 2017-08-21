@@ -1,5 +1,7 @@
 package com.xcosta.xmoney.api.cords;
 
+import com.xcosta.xmoney.api.configurations.XMoneyProperty;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -13,7 +15,10 @@ import java.io.IOException;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class CorsFilter implements Filter {
 
-    private String allowedOrigin = "http://localhost:8000"; // TODO: Configurar para diferentes ambientes
+    //private String allowedOrigin = "http://localhost:8000";
+
+    @Autowired
+    private XMoneyProperty xMoneyProperty;
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
@@ -21,6 +26,8 @@ public class CorsFilter implements Filter {
 
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) resp;
+
+        String allowedOrigin = xMoneyProperty.getOrigin();
 
         response.setHeader("Access-Control-Allow-Origin", allowedOrigin);
         response.setHeader("Access-Control-Allow-Credentials", "true");

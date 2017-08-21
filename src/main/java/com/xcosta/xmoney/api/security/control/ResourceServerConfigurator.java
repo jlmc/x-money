@@ -56,14 +56,12 @@ public class ResourceServerConfigurator extends ResourceServerConfigurerAdapter 
 
     @Bean
     public PasswordEncoder getPasswordEncoder() {
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        return passwordEncoder;
+        //PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder();
     }
 
     /**
      * Bean que permite fazer a autorização do utilizador para executar determinado metodo
-     *
-     * @return
      */
     @Bean
     public MethodSecurityExpressionHandler createExpressionHandler() {

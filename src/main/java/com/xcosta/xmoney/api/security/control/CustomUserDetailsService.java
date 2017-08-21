@@ -22,10 +22,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> user = userRepository.findByUsername(username);
-
-        UserDetails u = user.map(this::toUserDetails).orElseThrow(() -> new UsernameNotFoundException("username or password invalid"));
-
-        return u;
+        return user.map(this::toUserDetails).orElseThrow(() -> new UsernameNotFoundException("username or password invalid"));
     }
 
     private UserDetails toUserDetails(User user) {

@@ -1,6 +1,6 @@
 package com.xcosta.xmoney.api.activity.boundary;
 
-public class NonExistentOrInactivePersonException extends RuntimeException {
+class NonExistentOrInactivePersonException extends RuntimeException {
 
     public String messageKey = "person.non-existent-or-inactive";
 
