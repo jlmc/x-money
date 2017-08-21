@@ -15,10 +15,12 @@ import java.io.IOException;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class CorsFilter implements Filter {
 
-    //private String allowedOrigin = "http://localhost:8000";
+    private final XMoneyProperty xMoneyProperty;
 
     @Autowired
-    private XMoneyProperty xMoneyProperty;
+    public CorsFilter(XMoneyProperty xMoneyProperty) {
+        this.xMoneyProperty = xMoneyProperty;
+    }
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
