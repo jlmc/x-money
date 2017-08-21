@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -32,6 +33,7 @@ public class CategoryResource {
         return categoryRepository.findAll();
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADD_CATEGORIES')") // and #oauth2.hasScope('write')
     @PostMapping
     public ResponseEntity<Category> save(@RequestBody @Valid Category category, HttpServletResponse response) {
         Category categorySaved = this.categoryRepository.save(category);

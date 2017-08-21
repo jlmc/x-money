@@ -32,7 +32,18 @@ public class AuthorizationServerConfigurator extends AuthorizationServerConfigur
                 .authorizedGrantTypes("password", "refresh_token") // fluxo password flow, recebemos e username e passoword d o client
                 //.accessTokenValiditySeconds(1800); // validade do token
                 .accessTokenValiditySeconds(20) // validade do token
-                .refreshTokenValiditySeconds(3600 * 24);
+                .refreshTokenValiditySeconds(3600 * 24)
+                .and()
+                .withClient("mobile") // clientes da applicação Angular- nome da aplicação
+                .secret("mobile_1234") // secrete da aplicação
+                .scopes("read") // permissoes da aplicação no resources
+                //.authorizedGrantTypes("password") // fluxo password flow, recebemos e username e passoword d o client
+                .authorizedGrantTypes("password", "refresh_token") // fluxo password flow, recebemos e username e passoword d o client
+                //.accessTokenValiditySeconds(1800); // validade do token
+                .accessTokenValiditySeconds(20) // validade do token
+                .refreshTokenValiditySeconds(3600 * 24)
+
+        ;
     }
 
     @Override

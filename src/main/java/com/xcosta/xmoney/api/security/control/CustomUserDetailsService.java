@@ -1,5 +1,6 @@
 package com.xcosta.xmoney.api.security.control;
 
+import com.xcosta.xmoney.api.security.entity.Role;
 import com.xcosta.xmoney.api.security.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -30,7 +31,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     private UserDetails toUserDetails(User user) {
 
         Set<SimpleGrantedAuthority> grantedAuthorities = user.getRoles().stream()
-                .map(role -> role.getName())
+                .map(Role::getName)
                 .map(String::toUpperCase)
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toSet());
