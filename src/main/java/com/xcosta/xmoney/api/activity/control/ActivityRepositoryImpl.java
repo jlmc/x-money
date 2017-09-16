@@ -2,6 +2,7 @@ package com.xcosta.xmoney.api.activity.control;
 
 import com.xcosta.xmoney.api.activity.entity.Activity;
 import com.xcosta.xmoney.api.activity.entity.ActivityFilter;
+import com.xcosta.xmoney.api.activity.entity.ActivitySummary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -44,6 +45,38 @@ public class ActivityRepositoryImpl implements ActivityRepositoryQuery {
 
     }
 
+    @Override
+    public Page<ActivitySummary> summary(ActivityFilter filter, Pageable pageable) {
+
+
+        CriteriaBuilder builder = this.manager.getCriteriaBuilder();
+        CriteriaQuery<ActivitySummary> criteria = builder.createQuery(ActivitySummary.class);
+        Root<Activity> root = criteria.from(Activity.class);
+        //root.fetch("person", JoinType.LEFT);
+        //root.fetch("category", JoinType.LEFT);
+
+        criteria.select(
+                builder.construct(ActivitySummary.class,
+                        root.get("code"),
+                        root.get("description"),
+                        root.get("observation"),
+                        root.get("payday"),
+                        root.get("maturity"),
+                        root.get("value"),
+                        root.get("type"),
+                        root.get("category").get("name"),
+                        root.get("person").get("name")));
+
+        Predicate[] predicates = this.toPredicates(filter, builder, root);
+        criteria.distinct(true).where(predicates);
+
+
+        TypedQuery<ActivitySummary> query = manager.createQuery(criteria);
+        addPagination(query, pageable);
+
+        return new PageImpl<>(query.getResultList(), pageable, total(filter));
+    }
+
     private Predicate[] toPredicates(ActivityFilter filter, CriteriaBuilder builder, Root<Activity> root) {
         if (filter == null) {
             return new Predicate[0];
@@ -84,5 +117,14 @@ public class ActivityRepositoryImpl implements ActivityRepositoryQuery {
 
         // List<T> content, Pageable pageable, long total
         return query.getSingleResult();
+    }
+
+    private void addPagination(TypedQuery<?> query, Pageable pageable) {
+        int currentPage = pageable.getPageNumber();
+        int pageSize = pageable.getPageSize();
+        int firstRecordOfCurrentPage = currentPage * pageSize;
+
+        query.setFirstResult(firstRecordOfCurrentPage);
+        query.setMaxResults(pageSize);
     }
 }

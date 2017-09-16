@@ -3,6 +3,7 @@ package com.xcosta.xmoney.api.activity.boundary;
 import com.xcosta.xmoney.api.activity.control.ActivityRepository;
 import com.xcosta.xmoney.api.activity.entity.Activity;
 import com.xcosta.xmoney.api.activity.entity.ActivityFilter;
+import com.xcosta.xmoney.api.activity.entity.ActivitySummary;
 import com.xcosta.xmoney.api.person.control.PersonRepository;
 import com.xcosta.xmoney.api.person.entity.Person;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,5 +54,9 @@ public class ActivityManager {
 
     public void remove(Long code) {
         this.repository.delete(code);
+    }
+
+    public Page<ActivitySummary> summary(ActivityFilter filter, Pageable pageable) {
+        return this.repository.summary(filter, pageable);
     }
 }
